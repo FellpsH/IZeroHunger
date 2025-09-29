@@ -1,0 +1,192 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Produto 1",
+      "description": "Descrição do Produto 1",
+      "price": "1,00",
+      "quantity": 10,
+      "expiryDate": "2025-12-31",
+      "image": "",
+      "category": "Categoria 1",
+      "location": "Localização 1"
+    },
+    {
+      "id": 2,
+      "name": "Produto 2",
+      "description": "Descrição do Produto 2",
+      "price": "5,00",
+      "quantity": 5,
+      "expiryDate": "2023-11-30",
+      "image": "",
+      "category": "Categoria 2",
+      "location": "Localização 2"
+    },
+    {
+      "id": 3,
+      "name": "Pão",
+      "description": "Feito agorinha",
+      "price": "1,00",
+      "quantity": 1,
+      "expiryDate": "2000-01-01",
+      "image": "../assets/Sem título.png",
+      "category": "Categoria 1",
+      "location": "Localização 1"
+    },
+    {
+      "id": 4,
+      "name": "Leite",
+      "description": "Novo",
+      "price": "5,00",
+      "quantity": 5,
+      "expiryDate": "2000-01-01",
+      "image": "Sem título.png",
+      "category": "Categoria 2",
+      "location": "Localização 2"
+    },
+    {
+      "id": 5,
+      "name": "Biscoto",
+      "description": "Novo",
+      "price": "3,00",
+      "quantity": 5,
+      "expiryDate": "2000-01-01",
+      "image": "Sem título.png",
+      "category": "Categoria 1",
+      "location": "Localização 1"
+    },
+    {
+      "id": 6,
+      "name": "Arroz",
+      "description": "Arroz de qualidade",
+      "price": "15,00",
+      "quantity": 20,
+      "expiryDate": "2024-06-15",
+      "image": "arroz.png",
+      "category": "Categoria 3",
+      "location": "Localização 3"
+    },
+    {
+      "id": 7,
+      "name": "Feijão",
+      "description": "Feijão carioca",
+      "price": "7,00",
+      "quantity": 15,
+      "expiryDate": "2025-05-10",
+      "image": "feijao.png",
+      "category": "Categoria 3",
+      "location": "Localização 1"
+    },
+    {
+      "id": 8,
+      "name": "Açúcar",
+      "description": "Açúcar refinado",
+      "price": "3,50",
+      "quantity": 30,
+      "expiryDate": "2026-08-20",
+      "image": "acucar.png",
+      "category": "Categoria 2",
+      "location": "Localização 2"
+    },
+    {
+      "id": 9,
+      "name": "Óleo de Soja",
+      "description": "Óleo de soja 1L",
+      "price": "6,00",
+      "quantity": 25,
+      "expiryDate": "2025-12-31",
+      "image": "oleo.png",
+      "category": "Categoria 3",
+      "location": "Localização 1"
+    },
+    {
+      "id": 10,
+      "name": "Café",
+      "description": "Café moído",
+      "price": "12,00",
+      "quantity": 10,
+      "expiryDate": "2024-04-01",
+      "image": "cafe.png",
+      "category": "Categoria 2",
+      "location": "Localização 3"
+    },
+    {
+      "id": 11,
+      "name": "Macarrão",
+      "description": "Macarrão tipo espaguete",
+      "price": "4,50",
+      "quantity": 12,
+      "expiryDate": "2026-01-15",
+      "image": "macarrao.png",
+      "category": "Categoria 1",
+      "location": "Localização 2"
+    },
+    {
+      "id": 12,
+      "name": "Sabão em Pó",
+      "description": "Sabão em pó para roupas",
+      "price": "8,00",
+      "quantity": 8,
+      "expiryDate": "2025-11-30",
+      "image": "sabonete.png",
+      "category": "Categoria 3",
+      "location": "Localização 3"
+    },
+    {
+      "id": 13,
+      "name": "Condicionador",
+      "description": "Condicionador para cabelos",
+      "price": "9,00",
+      "quantity": 10,
+      "expiryDate": "2026-09-10",
+      "image": "condicionador.png",
+      "category": "Categoria 2",
+      "location": "Localização 1"
+    },
+    {
+      "id": 14,
+      "name": "Shampoo",
+      "description": "Shampoo anticaspa",
+      "price": "10,00",
+      "quantity": 5,
+      "expiryDate": "2026-08-15",
+      "image": "shampoo.png",
+      "category": "Categoria 3",
+      "location": "Localização 2"
+    },
+    {
+      "id": 15,
+      "name": "Detergente",
+      "description": "Detergente líquido",
+      "price": "4,00",
+      "quantity": 20,
+      "expiryDate": "2025-05-30",
+      "image": "detergente.png",
+      "category": "Categoria 1",
+      "location": "Localização 3"
+    },
+    {
+      "name": "Pão",
+      "description": "Novo",
+      "price": "1,00",
+      "quantity": "5",
+      "expiryDate": "2000-01-01",
+      "image": null,
+      "id": 16
+    },
+    {
+      "name": "queijo minas",
+      "description": "qq",
+      "price": 1,
+      "quantity": "111",
+      "expiryDate": "2000-01-01",
+      "image": null,
+      "location": "Belo Horizonte",
+      "category": "Comida",
+      "id": 17
+    },
+    {
+      "id": 18
+    }
+  ]
+}
