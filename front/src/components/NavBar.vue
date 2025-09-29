@@ -44,13 +44,19 @@
           </li>
 
           <!-- Menu do usuário autenticado -->
-          <li v-if="isAuthenticated" class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle user-chip" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <li v-if="isAuthenticated" class="nav-item dropdown" :class="{ 'show': dropdownOpen }">
+            <a 
+              class="nav-link dropdown-toggle user-chip" 
+              href="#" 
+              role="button" 
+              @click.prevent="toggleDropdown"
+              aria-expanded="false"
+            >
               <i class="fas fa-user-circle me-1"></i>
               <span class="d-none d-md-inline">{{ user.nome }}</span>
               <small class="role-badge ms-2">{{ user.tipo }}</small>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
+            <ul class="dropdown-menu dropdown-menu-end shadow" :class="{ 'show': dropdownOpen }">
               <li class="px-3 py-2 text-muted small">
                 Autenticado como<br />
                 <strong>{{ user.email }}</strong>
@@ -99,7 +105,8 @@ export default {
   },
   data() {
     return {
-      cartItemsCount: 0
+      cartItemsCount: 0,
+      dropdownOpen: false
     };
   },
   computed: {
@@ -122,6 +129,21 @@ export default {
       } catch (e) {
         this.cartItemsCount = 0;
       }
+    },
+    
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
+    
+    closeDropdown() {
+      this.dropdownOpen = false;
+    },
+    
+    handleClickOutside(event) {
+      const dropdown = this.$el.querySelector('.dropdown');
+      if (dropdown && !dropdown.contains(event.target)) {
+        this.closeDropdown();
+      }
     }
   },
   mounted() {
@@ -130,10 +152,14 @@ export default {
     
     // Escutar eventos de atualização do carrinho
     this.$root.$on('cart-updated', this.updateCartCount);
+    
+    // Adicionar listener para cliques fora do dropdown
+    document.addEventListener('click', this.handleClickOutside);
   },
   beforeDestroy() {
-    // Limpar listener
+    // Limpar listeners
     this.$root.$off('cart-updated', this.updateCartCount);
+    document.removeEventListener('click', this.handleClickOutside);
   }
 };
 </script>
@@ -224,12 +250,63 @@ export default {
 .user-chip {
   display: inline-flex;
   align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+.user-chip:hover {
+  background: rgba(255,255,255,0.1);
+  text-decoration: none;
+  color: white;
 }
 
 .role-badge {
   background: rgba(255,255,255,0.2);
   padding: 2px 8px;
   border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+/* Dropdown customizado */
+.dropdown-menu {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  min-width: 250px;
+}
+
+.dropdown-menu.show {
+  display: block;
+  animation: dropdownFadeIn 0.3s ease;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsividade para telas pequenas */
