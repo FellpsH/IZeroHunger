@@ -1,73 +1,151 @@
 <template>
-  <div>
+  <div class="cart-page">
     <Navbar />
-    <div class="container mt-4">
-      <h1 class="text-center mb-4">Carrinho!</h1>
-      <div v-if="cartItems.length > 0">
-        <ul class="list-group mb-4">
-          <li
-            v-for="item in cartItems"
-            :key="item.id"
-            class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row"
-          >
-            <div class="d-flex align-items-center mb-3 mb-md-0">
-              <img 
-                v-if="item.image" 
-                :src="item.image" 
-                alt="Imagem do produto" 
-                class="img-thumbnail me-3" 
-                style="width: 80px; height: 80px; object-fit: cover;"
-              />
-              <div>
-                <h5 class="mb-1">{{ item.name }}</h5>
-                <p class="mb-0"><i class="fas fa-tag"></i> Preço: R$ {{ formatPrice(item.price) }}</p>
-                <p class="mb-0"><i class="fas fa-box"></i> Disponível: {{ item.quantity }} unidades</p>
-              </div>
-            </div>
-            <div class="input-group" style="width: 180px;">
-              <button
-                class="btn btn-outline-secondary"
-                @click="decreaseQuantity(item)"
-                :disabled="item.selectedQuantity <= 1"
-              >
-                <i class="fas fa-minus"></i>
-              </button>
-              <input
-                type="number"
-                class="form-control"
-                v-model.number="item.selectedQuantity"
-                min="1"
-                :max="item.quantity"
-                @input="updateTotal"
-                @change="validateQuantity(item)"
-              />
-              <button
-                class="btn btn-outline-secondary"
-                @click="increaseQuantity(item)"
-                :disabled="item.selectedQuantity >= item.quantity"
-              >
-                <i class="fas fa-plus"></i>
-              </button>
-            </div>
-            <button class="btn btn-danger ms-2" @click="removeItem(item)">
-              <i class="fas fa-trash-alt"></i> Remover
-            </button>
-          </li>
-        </ul>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4>Total: R$ {{ formatPrice(total) }}</h4>
-          <div class="d-flex">
-            <button class="btn btn-primary me-2" @click="openFinalizeModal">
-              <i class="fas fa-check"></i> Finalizar Compra
-            </button>
-            <button class="btn btn-danger" @click="clearCart">
-              <i class="fas fa-trash"></i> Limpar Carrinho
+    
+    <!-- Header do Carrinho -->
+    <div class="cart-header">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h1 class="cart-title">
+              <i class="fas fa-shopping-cart me-3"></i>
+              Meu Carrinho
+            </h1>
+            <p class="cart-subtitle" v-if="cartItems.length > 0">
+              {{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'itens' }} no seu carrinho
+            </p>
+          </div>
+          <div class="col-md-4 text-end" v-if="cartItems.length > 0">
+            <button class="btn btn-clear-cart" @click="clearCart">
+              <i class="fas fa-trash-alt me-2"></i>
+              <span>Limpar Carrinho</span>
             </button>
           </div>
         </div>
       </div>
-      <div v-else>
-        <p class="text-center">O carrinho está vazio.</p>
+    </div>
+
+    <div class="container py-4">
+      <!-- Itens do Carrinho -->
+      <div v-if="cartItems.length > 0" class="row">
+        <div class="col-lg-8">
+          <div class="cart-items">
+            <div
+              v-for="item in cartItems"
+              :key="item.id"
+              class="cart-item"
+            >
+              <div class="item-image">
+                <img 
+                  v-if="item.image" 
+                  :src="item.image" 
+                  alt="Imagem do produto"
+                />
+                <div v-else class="no-image">
+                  <i class="fas fa-box fa-2x"></i>
+                </div>
+              </div>
+              
+              <div class="item-details">
+                <h5 class="item-name">{{ item.name }}</h5>
+                <p class="item-price">
+                  <i class="fas fa-tag me-1"></i>
+                  R$ {{ formatPrice(item.price) }}
+                </p>
+                <p class="item-stock">
+                  <i class="fas fa-box me-1"></i>
+                  {{ item.quantity }} disponível
+                </p>
+              </div>
+              
+              <div class="item-controls">
+                <div class="quantity-control">
+                  <button
+                    class="btn-quantity"
+                    @click="decreaseQuantity(item)"
+                    :disabled="item.selectedQuantity <= 1"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input
+                    type="number"
+                    class="quantity-input"
+                    v-model.number="item.selectedQuantity"
+                    min="1"
+                    :max="item.quantity"
+                    @input="updateTotal"
+                    @change="validateQuantity(item)"
+                  />
+                  <button
+                    class="btn-quantity"
+                    @click="increaseQuantity(item)"
+                    :disabled="item.selectedQuantity >= item.quantity"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                
+                <div class="item-total">
+                  R$ {{ formatPrice(item.price * item.selectedQuantity) }}
+                </div>
+                
+                <button class="btn-remove" @click="removeItem(item)">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Resumo do Pedido -->
+        <div class="col-lg-4">
+          <div class="order-summary">
+            <h4 class="summary-title">
+              <i class="fas fa-receipt me-2"></i>
+              Resumo do Pedido
+            </h4>
+            
+            <div class="summary-line">
+              <span>Subtotal ({{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'itens' }})</span>
+              <span class="summary-value">R$ {{ formatPrice(total) }}</span>
+            </div>
+            
+            <div class="summary-line">
+              <span>Frete</span>
+              <span class="summary-value text-success">Grátis</span>
+            </div>
+            
+            <hr class="summary-divider">
+            
+            <div class="summary-total">
+              <span>Total</span>
+              <span class="total-value">R$ {{ formatPrice(total) }}</span>
+            </div>
+            
+            <button class="btn btn-checkout" @click="openFinalizeModal">
+              <i class="fas fa-credit-card me-2"></i>
+              Finalizar Compra
+            </button>
+            
+            <div class="security-info">
+              <i class="fas fa-shield-alt me-2"></i>
+              Compra 100% segura e protegida
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Carrinho Vazio -->
+      <div v-else class="empty-cart">
+        <div class="empty-cart-content">
+          <i class="fas fa-shopping-cart empty-icon"></i>
+          <h3>Seu carrinho está vazio</h3>
+          <p>Adicione produtos incríveis ao seu carrinho e finalize sua compra!</p>
+          <router-link :to="{ name: 'ProductsList' }" class="btn btn-primary btn-lg">
+            <i class="fas fa-arrow-left me-2"></i>
+            Continuar Comprando
+          </router-link>
+        </div>
       </div>
     </div>
 
@@ -293,78 +371,394 @@ export default {
 
 
 <style>
-/* Adicionando responsividade com breakpoints */
-@media (max-width: 768px) {
-  .container {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-
-  .list-group-item {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 10px;
-  }
-
-  .list-group-item img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .input-group {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .input-group button {
-    width: 40px;
-  }
-
-  .input-group input {
-    width: 60px;
-  }
-
-  .d-flex {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .d-flex button {
-    width: 100%;
-    margin-top: 5px;
-  }
+/* Layout Principal */
+.cart-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
-@media (max-width: 480px) {
-  .list-group-item h5 {
-    font-size: 1rem;
-  }
-
-  .list-group-item p {
-    font-size: 0.875rem;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 10px;
-  }
-
-  .btn-primary,
-  .btn-danger {
-    font-size: 1rem;
-  }
+/* Header do Carrinho */
+.cart-header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+  color: white;
+  padding: 2rem 0;
+  box-shadow: 0 4px 20px rgba(13, 110, 253, 0.3);
 }
 
-.list-group-item {
+.cart-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.cart-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0.5rem 0 0 0;
+}
+
+.btn-clear-cart {
+  background: #dc3545 !important;
+  border: 2px solid #dc3545 !important;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-clear-cart:hover {
+  background: #c82333 !important;
+  border-color: #c82333 !important;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(200, 35, 51, 0.4);
+}
+
+.btn-clear-cart i {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.btn-clear-cart:hover i {
+  transform: scale(1.1);
+}
+
+/* Itens do Carrinho */
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cart-item {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cart-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.item-image {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image {
+  color: #6c757d;
+}
+
+.item-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 0.5rem;
+}
+
+.item-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0d6efd;
+  margin-bottom: 0.25rem;
+}
+
+.item-stock {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Controles do Item */
+.item-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 50px;
+  padding: 4px;
+}
+
+.btn-quantity {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0d6efd;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btn-quantity:hover:not(:disabled) {
+  background: #0d6efd;
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-quantity:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-input {
+  width: 60px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-weight: 600;
+  color: #212529;
+}
+
+.quantity-input:focus {
+  outline: none;
+  background: white;
+  border-radius: 8px;
+}
+
+.item-total {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.btn-remove {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-remove:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+/* Resumo do Pedido */
+.order-summary {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 2rem;
+}
+
+.summary-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.summary-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
+.summary-value {
+  font-weight: 600;
+}
+
+.summary-divider {
+  margin: 1.5rem 0;
+  border-color: #dee2e6;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+}
+
+.total-value {
+  color: #28a745;
+  font-size: 1.5rem;
+}
+
+.btn-checkout {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-checkout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #218838 0%, #17a2b8 100%);
+}
+
+.security-info {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(40, 167, 69, 0.1);
+  border-radius: 8px;
+  color: #28a745;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Carrinho Vazio */
+.empty-cart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.empty-cart-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.empty-cart-content h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+.empty-cart-content p {
+  color: #6c757d;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+  .cart-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .item-controls {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .order-summary {
+    margin-top: 2rem;
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .cart-title {
+    font-size: 2rem;
+  }
+  
+  .cart-header {
+    padding: 1.5rem 0;
+  }
+  
+  .cart-item {
+    padding: 1rem;
+  }
+  
+  .item-image {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 576px) {
+  .cart-title {
+    font-size: 1.75rem;
+  }
+  
+  .item-controls {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .quantity-control {
+    order: 1;
+  }
+  
+  .item-total {
+    order: 2;
+  }
+  
+  .btn-remove {
+    order: 3;
+  }
+}
+
+/* Remover spinners dos inputs number */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -372,32 +766,8 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 input[type=number] {
+  appearance: textfield;
   -moz-appearance: textfield;
-}
-
-h1 {
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  font-size: 2rem;
-}
-
-h4 {
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  font-size: 1.5rem;
-}
-
-.btn {
-  transition: background-color 0.3s, color 0.3s;
-  width: auto;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
 }
 
 /* Estilo para o modal de carregamento e sucesso */
