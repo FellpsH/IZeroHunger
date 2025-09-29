@@ -97,6 +97,11 @@ export default {
       default: () => [],
     },
   },
+  data() {
+    return {
+      cartItemsCount: 0
+    };
+  },
   computed: {
     // Mostrar botões baseado no tipo de usuário
     showAddProduct() {
@@ -106,13 +111,29 @@ export default {
       return this.isAuthenticated; // ambos podem ver o carrinho
     },
     cartCount() {
+      return this.cartItemsCount;
+    }
+  },
+  methods: {
+    updateCartCount() {
       try {
         const items = JSON.parse(localStorage.getItem('cartItems')) || [];
-        return items.length;
+        this.cartItemsCount = items.length;
       } catch (e) {
-        return 0;
+        this.cartItemsCount = 0;
       }
     }
+  },
+  mounted() {
+    // Inicializar contador
+    this.updateCartCount();
+    
+    // Escutar eventos de atualização do carrinho
+    this.$root.$on('cart-updated', this.updateCartCount);
+  },
+  beforeDestroy() {
+    // Limpar listener
+    this.$root.$off('cart-updated', this.updateCartCount);
   }
 };
 </script>

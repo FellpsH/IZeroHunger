@@ -291,11 +291,17 @@ export default {
       this.cartItems = this.cartItems.filter(i => i.id !== item.id);
       this.calculateTotal();
       localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
+      
+      // Emitir evento para atualizar contador do carrinho
+      this.$root.$emit('cart-updated');
     },
     clearCart() {
       this.cartItems = [];
       localStorage.removeItem('cartItems');
       this.total = 0;
+      
+      // Emitir evento para atualizar contador do carrinho
+      this.$root.$emit('cart-updated');
     },
   
     openFinalizeModal() {
@@ -317,7 +323,7 @@ export default {
     },
 
     redirectToProductList() {
-      this.clearCart(); // Limpa o carrinho
+      this.clearCart(); // Limpa o carrinho (já emite o evento cart-updated)
       this.$router.push('/productslist'); // Redireciona para a lista de produtos
     },
 
