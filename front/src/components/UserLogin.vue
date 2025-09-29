@@ -4,6 +4,11 @@
       <div class="card-body">
         <h1 class="text-center mb-4"><i class="fa fa-lock"></i> Login</h1>
         <form @submit.prevent="handleLogin">
+          <!-- Exibir erro se houver -->
+          <div v-if="error" class="alert alert-danger" role="alert">
+            <i class="fa fa-exclamation-triangle"></i> {{ error }}
+          </div>
+
           <div class="mb-3">
             <label for="username" class="form-label">Email</label>
             <div class="input-group">
@@ -14,14 +19,16 @@
                 type="text"
                 id="username"
                 v-model="username"
+                @input="clearError"
                 class="form-control"
-                placeholder="Enter your email"
+                placeholder="Digite seu email"
                 required
+                :disabled="loading"
               />
             </div>
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label">Senha</label>
             <div class="input-group">
               <span class="input-group-text">
                 <i class="fa fa-lock"></i>
@@ -30,14 +37,18 @@
                 type="password"
                 id="password"
                 v-model="password"
+                @input="clearError"
                 class="form-control"
-                placeholder="Enter your password"
+                placeholder="Digite sua senha"
                 required
+                :disabled="loading"
               />
             </div>
           </div>
-          <button type="submit" class="btn btn-primary w-100 mt-3">
-            <i class="fa fa-sign-in"></i> Login
+          <button type="submit" class="btn btn-primary w-100 mt-3" :disabled="loading">
+            <i v-if="loading" class="fa fa-spinner fa-spin"></i>
+            <i v-else class="fa fa-sign-in"></i> 
+            {{ loading ? 'Entrando...' : 'Entrar' }}
           </button>
         </form>
       </div>
@@ -46,55 +57,68 @@
 </template>
 
 <script>
+import authService from '../services/authService';
+
 export default {
   name: 'UserLogin',
   data() {
     return {
       username: '',
       password: '',
-      apiUrl: process.env.VUE_APP_API_MODE, // Certifique-se de que o URL da API esteja configurado corretamente
+      loading: false,
+      error: null
     };
   },
   methods: {
     async handleLogin() {
-      try {
-        const response = await fetch(`${this.apiUrl}/usuarios/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: this.username,
-            senha: this.password,
-          }),
-        });
+      this.loading = true;
+      this.error = null;
 
-        if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem('user', JSON.stringify(data));
-          this.$emit('login-success');
-          this.$router.push({ name: 'ProductsList' }); // Navegar para a lista de produtos
+      try {
+        // Tentar primeiro com o endpoint que retorna JWT
+        let result = await authService.loginWithJWT(this.username, this.password);
+        
+        // Se falhar, tentar com o endpoint simples
+        if (!result.success) {
+          result = await authService.login(this.username, this.password);
+        }
+
+        if (result.success) {
+          console.log('Login bem-sucedido:', result.user);
+          this.$emit('login-success', result.user);
+          this.$router.push({ name: 'ProductsList' });
         } else {
-          alert('Credenciais inválidas');
+          this.error = result.error || 'Credenciais inválidas';
         }
       } catch (error) {
-        console.error(error);
-        alert('Erro ao tentar fazer login. Tente novamente.');
+        console.error('Erro no login:', error);
+        this.error = 'Erro de conexão. Tente novamente.';
+      } finally {
+        this.loading = false;
       }
     },
+    
     logout() {
-      localStorage.removeItem('user');
-      this.$router.push({ name: 'UserLogin' }); // Redireciona para a página de login
+      authService.logout();
+      this.$router.push({ name: 'UserLogin' });
     },
-  },
-  mounted() {
-    console.log('Componente de login carregado!');
-    const user = localStorage.getItem('user');
-    if (user) {
-      this.$emit('login-success');
-      
+
+    // Limpar erro quando usuário digitar
+    clearError() {
+      this.error = null;
     }
   },
+  
+  mounted() {
+    console.log('Componente de login carregado!');
+    
+    // Verificar se já está autenticado
+    if (authService.isAuthenticated()) {
+      const user = authService.getUser();
+      this.$emit('login-success', user);
+      this.$router.push({ name: 'ProductsList' });
+    }
+  }
 };
 </script>
 

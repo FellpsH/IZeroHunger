@@ -27,30 +27,48 @@
       <!-- Menu colapsado -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <!-- Botão para adicionar produto -->
-          <li class="nav-item me-2">
-            <router-link to="/ProductRegistration" class="btn btn-success">
+          <!-- Informações do usuário logado -->
+          <li v-if="isAuthenticated" class="nav-item me-2">
+            <span class="navbar-text">
+              <i class="fas fa-user"></i> 
+              {{ user.nome }} ({{ user.tipo }})
+            </span>
+          </li>
+
+          <!-- Botão para adicionar produto (apenas fornecedores) -->
+          <li v-if="showAddProduct" class="nav-item me-2">
+            <router-link :to="{ name: 'ProductRegistration' }" @click.native.prevent="$router.push({ name: 'ProductRegistration' })" class="btn btn-success">
               <i class="fas fa-plus"></i> Adicionar Produto
             </router-link>
           </li>
-          <!-- Botão do carrinho -->
-          <li class="nav-item me-2">
-            <router-link to="/ProductsCart" class="btn btn-info">
+          
+          <!-- Botão do carrinho (compradores e fornecedores) -->
+          <li v-if="showCart" class="nav-item me-2">
+            <router-link :to="{ name: 'ProductsCart' }" @click.native.prevent="$router.push({ name: 'ProductsCart' })" class="btn btn-info">
               <i class="fas fa-shopping-cart"></i> Carrinho
             </router-link>
           </li>
-          <!-- Botão para tela de login -->
-          <li class="nav-item me-2">
-            <router-link to="/userlogin" class="btn btn-primary">
-              <i class="fas fa-sign-in-alt"></i> Login
-            </router-link>
+
+          <!-- Botão de logout (se autenticado) -->
+          <li v-if="isAuthenticated" class="nav-item me-2">
+            <button @click="logout" class="btn btn-outline-danger">
+              <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
           </li>
-          <!-- Botão para tela de registro -->
-          <li class="nav-item">
-            <router-link to="/userregistration" class="btn btn-outline-secondary">
-              <i class="fas fa-user-plus"></i> Registrar
-            </router-link>
-          </li>
+
+          <!-- Botões de login/registro (se não autenticado) -->
+          <template v-if="!isAuthenticated">
+            <li class="nav-item me-2">
+              <router-link to="/userlogin" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Login
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/userregistration" class="btn btn-outline-secondary">
+                <i class="fas fa-user-plus"></i> Registrar
+              </router-link>
+            </li>
+          </template>
         </ul>
       </div>
     </div>
@@ -60,14 +78,26 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+import authMixin from '../mixins/authMixin';
+
 export default {
   name: 'NavBar',
+  mixins: [authMixin],
   props: {
     cartItems: {
       type: Array,
       default: () => [],
     },
   },
+  computed: {
+    // Mostrar botões baseado no tipo de usuário
+    showAddProduct() {
+      return this.isFornecedor();
+    },
+    showCart() {
+      return this.isAuthenticated; // ambos podem ver o carrinho
+    }
+  }
 };
 </script>
 

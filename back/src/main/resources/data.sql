@@ -17,6 +17,10 @@ VALUES (1, 'Joao Silva', 'joao@fornecedor.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4o
 INSERT INTO usuarios (id, nome, email, senha, telefone, endereco, data_nascimento, tipo) 
 VALUES (2, 'Maria Santos', 'maria@comprador.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', '11888888888', 'Av. Principal, 456', '1985-05-20', 'COMPRADOR');
 
+-- Inserir usuario fornecedor Fellipe
+INSERT INTO usuarios (id, nome, email, senha, telefone, endereco, data_nascimento, tipo) 
+VALUES (3, 'fellipe', 'fellipe@teste.com', '$2a$10$ANiNoenAridLvXN3oK/Neuh1DA6LGu7HXvo3FKuT8bctENIO9A71O', '11777777777', 'Rua das Flores, 123', '1998-09-08', 'FORNECEDOR');
+
 -- Inserir produtos
 INSERT INTO products (id, name, description, price, quantity, location, expiry_date, fornecedor, image) 
 VALUES (1, 'Banana', 'Banana prata fresca', 3.50, 50, 'Sao Paulo - SP', '2024-09-20', 1, null);

@@ -74,6 +74,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 // Endpoints públicos
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/usuarios/criar").permitAll() // Permitir criação de usuários
+                .requestMatchers("/api/usuarios/login").permitAll() // Permitir login de usuários
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/products/**").permitAll() // Temporário para desenvolvimento
                 .requestMatchers("/api/categories/**").permitAll() // Temporário para desenvolvimento

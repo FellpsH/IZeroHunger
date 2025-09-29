@@ -156,6 +156,9 @@ export default {
       }
     }
     
+    // Atualiza flag de login
+    this.isLoggedIn = !!user;
+    
     // Verificar se o usuário existe antes de acessar suas propriedades
     if (user && user.endereco) {
       console.log(user.endereco);
@@ -218,7 +221,13 @@ export default {
     },
   
     openFinalizeModal() {
-      this.isFinalizeModalVisible = true;
+      if (this.isLoggedIn) {
+        // Usuário já autenticado: segue direto para finalizar
+        this.finalizePurchase();
+      } else {
+        // Usuário não autenticado: mostra modal para login/cadastro
+        this.isFinalizeModalVisible = true;
+      }
     },
     showLoginModal() {
       this.isFinalizeModalVisible = false;
@@ -241,11 +250,13 @@ export default {
 
       try {
         const user = JSON.parse(localStorage.getItem('user'));
-        console.log(user)
-        const response = await fetch(`${process.env.VUE_APP_API_MODE}/carts/registraCompra`, {
+        const token = localStorage.getItem('jwt_token');
+        const apiBase = process.env.VUE_APP_API_URL || process.env.VUE_APP_API_MODE || 'http://localhost:8080/api';
+        const response = await fetch(`${apiBase}/carts/registraCompra`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             },
             body: JSON.stringify({
                 userId: user.id,
@@ -261,7 +272,7 @@ export default {
               throw new Error('Erro ao finalizar a compra');
           }
 
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, 400));
           this.isLoading = false;
       } catch (error) {
           this.$message.error('Erro ao processar compra');
