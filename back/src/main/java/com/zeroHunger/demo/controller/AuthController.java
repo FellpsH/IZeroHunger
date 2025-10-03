@@ -76,6 +76,7 @@ public class AuthController {
                 usuario.getEmail(),
                 usuario.getNome(),
                 usuario.getTipo(),
+                usuario.getEndereco(),
                 usuario.getId()
             );
 
@@ -127,6 +128,7 @@ public class AuthController {
                 usuarioSalvo.getEmail(),
                 usuarioSalvo.getNome(),
                 usuarioSalvo.getTipo(),
+                usuarioSalvo.getEndereco(),
                 usuarioSalvo.getId()
             );
 
@@ -155,7 +157,8 @@ public class AuthController {
                             "id", usuario.getId(),
                             "email", usuario.getEmail(),
                             "nome", usuario.getNome(),
-                            "tipo", usuario.getTipo()
+                            "tipo", usuario.getTipo(),
+                            "endereco", usuario.getEndereco()
                         ));
                         return ResponseEntity.ok(response);
                     }

@@ -150,7 +150,7 @@
     </div>
 
     <!-- Modal de Finalização de Compra -->
-    <el-dialog :visible.sync="isFinalizeModalVisible" width="80%" title="Finalizar Compra"  @close="isLoadingModalVisible = false">
+    <el-dialog :visible.sync="isFinalizeModalVisible" width="80%" title="Finalizar Compra" append-to-body @close="isLoadingModalVisible = false">
       <p>Você precisa de uma conta para continuar a compra.</p>
       <p>Deseja usar sua conta existente ou criar uma nova conta?</p>
       <div class="d-flex justify-content-center mt-4">
@@ -164,32 +164,65 @@
     </el-dialog>
 
     <!-- Modais de Login e Cadastro -->
-    <el-dialog :visible.sync="isLoginModalVisible" width="80%" title="Login">
+    <el-dialog :visible.sync="isLoginModalVisible" width="80%" title="Login" append-to-body>
       <UserLogin @login-success="onLoginSuccess" />
     </el-dialog>
 
-    <el-dialog :visible.sync="isRegistrationModalVisible" width="80%" title="Criar Conta">
+    <el-dialog :visible.sync="isRegistrationModalVisible" width="80%" title="Criar Conta" append-to-body>
       <UserRegistration />
     </el-dialog>
 
     <!-- Modal de Carregamento/Confirmação -->
-    <el-dialog :visible.sync="isLoadingModalVisible" width="400px" :show-close="false" custom-class="loading-modal"  @close="redirectToProductList">
+    <el-dialog :visible.sync="isLoadingModalVisible" width="500px" :show-close="false" custom-class="success-modal" append-to-body>
       <div v-if="isLoading" class="loading-content">
-        <div class="spinner"></div>
-        <p class="loading-text">Processando seu pedido...</p>
+        <div class="loading-spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+        </div>
+        <h3 class="loading-title">Processando seu pedido</h3>
+        <p class="loading-subtitle">Aguarde enquanto finalizamos sua compra...</p>
       </div>
       <div v-else class="success-content">
-        <div class="checkmark-animation">
-          <span class="checkmark">
-            <div class="checkmark-stem"></div>
-            <div class="checkmark-kick"></div>
-          </span>
+        <div class="success-animation">
+          <div class="success-checkmark">
+            <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark-check" fill="none" d="m14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+          </div>
         </div>
-        <p class="success-text">Compra finalizada com sucesso!</p>
-        <p class="success-text">
-          Seu pedido será entregue no seguinte endereço:
-        </p>
-        <p class="address-text">{{ userAddress }}</p>
+        
+        <div class="success-message">
+          <h2 class="success-title">Compra Finalizada!</h2>
+          <p class="success-subtitle">Seu pedido foi processado com sucesso</p>
+          
+          <div class="order-details">
+            <div class="detail-item">
+              <i class="fas fa-shopping-bag"></i>
+              <span>{{ cartItems.length }} {{ cartItems.length === 1 ? 'item' : 'itens' }} comprados</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-credit-card"></i>
+              <span>Total: R$ {{ formatPrice(total) }}</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>{{ userAddress }}</span>
+            </div>
+          </div>
+          
+          <div class="success-actions">
+            <button class="btn btn-track-order" @click="goToOrderTracking">
+              <i class="fas fa-truck me-2"></i>
+              Acompanhar Pedido
+            </button>
+            <button class="btn btn-primary-custom" @click="redirectToProductList">
+              <i class="fas fa-arrow-left me-2"></i>
+              Continuar Comprando
+            </button>
+          </div>
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -199,6 +232,7 @@
 import Navbar from './NavBar.vue';
 import UserLogin from './UserLogin.vue';
 import UserRegistration from './UserRegistration.vue';
+import pedidoService from '../services/pedidoService';
 
 export default {
   name: 'ProductsCart',
@@ -215,9 +249,10 @@ export default {
       isLoginModalVisible: false,
       isRegistrationModalVisible: false,
       isLoggedIn: false,
-      isLoading: true,
+      isLoading: false,
       isLoadingModalVisible: false,
       userAddress: '',
+      lastCreatedOrder: null,
     };
   },
   mounted() {
@@ -239,10 +274,8 @@ export default {
     
     // Verificar se o usuário existe antes de acessar suas propriedades
     if (user && user.endereco) {
-      console.log(user.endereco);
       this.userAddress = user.endereco;
     } else {
-      console.log('Usuário não encontrado ou sem endereço');
       this.userAddress = 'Endereço não informado';
     }
     if (storedCartItems) {
@@ -253,6 +286,9 @@ export default {
       }));
       this.calculateTotal();
     }
+    
+    // Garantir que isLoading seja false após carregar
+    this.isLoading = false;
   },
   methods: {
     formatPrice(value) {
@@ -305,12 +341,19 @@ export default {
     },
   
     openFinalizeModal() {
+      // Evitar múltiplas chamadas simultâneas
+      if (this.isLoading) {
+        return;
+      }
+      
       if (this.isLoggedIn) {
         // Usuário já autenticado: segue direto para finalizar
         this.finalizePurchase();
       } else {
         // Usuário não autenticado: mostra modal para login/cadastro
-        this.isFinalizeModalVisible = true;
+        this.$nextTick(() => {
+          this.isFinalizeModalVisible = true;
+        });
       }
     },
     showLoginModal() {
@@ -327,41 +370,89 @@ export default {
       this.$router.push('/productslist'); // Redireciona para a lista de produtos
     },
 
+    goToOrderTracking() {
+      // Usar dados do pedido criado (se disponível) ou dados do localStorage
+      if (this.lastCreatedOrder) {
+        localStorage.setItem('currentOrder', JSON.stringify(this.lastCreatedOrder));
+      } else {
+        // Fallback para dados simulados (caso não tenha pedido criado)
+        const orderData = {
+          orderId: 'PED' + Date.now(),
+          items: this.cartItems,
+          total: this.total,
+          address: this.userAddress,
+          orderDate: new Date().toISOString(),
+          status: 'confirmed'
+        };
+        localStorage.setItem('currentOrder', JSON.stringify(orderData));
+      }
+      
+      this.clearCart();
+      this.$router.push('/order-tracking');
+    },
+
     async finalizePurchase() {
+      // Evitar execuções duplicadas
+      if (this.isLoading) {
+        return;
+      }
+      
       this.isLoginModalVisible = false;
       this.isLoadingModalVisible = true;
       this.isLoading = true;
 
       try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const token = localStorage.getItem('jwt_token');
-        const apiBase = process.env.VUE_APP_API_URL || process.env.VUE_APP_API_MODE || 'http://localhost:8080/api';
-        const response = await fetch(`${apiBase}/carts/registraCompra`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify({
-                userId: user.id,
-                totalPrice: this.total,
-                items: this.cartItems.map(item => ({
-                    productId: item.id,
-                    quantity: item.selectedQuantity,
-                })),
-            }),
-        });
-
-          if (!response.ok) {
-              throw new Error('Erro ao finalizar a compra');
+        // Obter dados do usuário
+        const userString = localStorage.getItem('user');
+        let userId = null;
+        
+        if (userString) {
+          try {
+            const user = JSON.parse(userString);
+            userId = user.id;
+          } catch (error) {
+            console.error('Erro ao fazer parse do usuário:', error);
           }
+        }
 
-          await new Promise(resolve => setTimeout(resolve, 400));
+        if (!userId) {
+          throw new Error('Usuário não encontrado');
+        }
+
+        // Usar o serviço de pedidos (que usa o endpoint /carts/registraCompra)
+        const result = await pedidoService.criarPedido(userId, this.cartItems, this.total);
+
+        if (result.success) {
+          // Salvar dados do pedido criado (simulado)
+          this.lastCreatedOrder = {
+            orderId: 'PED' + Date.now(),
+            items: this.cartItems,
+            total: this.total,
+            address: this.userAddress,
+            orderDate: new Date().toISOString(),
+            status: 'CONFIRMADO',
+            statusDescricao: 'Pedido Confirmado'
+          };
+
+          // Aguardar um pouco antes de mostrar o sucesso
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Mudar para o conteúdo de sucesso (mantém o mesmo modal aberto)
           this.isLoading = false;
+          
+          // O modal de loading continua aberto, mas agora mostra o conteúdo de sucesso
+
+        } else {
+          throw new Error(result.error || 'Erro ao criar pedido');
+        }
+
       } catch (error) {
-          this.$message.error('Erro ao processar compra');
-          console.error(error);
-          this.isLoading = false;
+        console.error('Error:', error);
+        this.isLoadingModalVisible = false;
+        this.isLoading = false;
+        
+        // Mostrar toast de erro
+        this.showToast('Erro ao finalizar compra. Tente novamente.', 'error');
       }
     },
   
@@ -370,6 +461,23 @@ export default {
       this.isLoggedIn = true;
       this.isLoginModalVisible = false;
       this.finalizePurchase(); // Finaliza a compra após o login
+    },
+
+    // Mostrar toast personalizado
+    showToast(message, type = 'info') {
+      // Usar Element UI message se disponível, senão usar alert
+      if (this.$message) {
+        if (type === 'error') {
+          this.$message.error(message);
+        } else if (type === 'success') {
+          this.$message.success(message);
+        } else {
+          this.$message.info(message);
+        }
+      } else {
+        // Fallback para alert nativo
+        alert(message);
+      }
     },
   },
 };
@@ -776,38 +884,57 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* Estilo para o modal de carregamento e sucesso */
-.loading-modal .el-dialog__body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 30px;
+/* Modal de Sucesso */
+.success-modal .el-dialog {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
 }
 
-.loading-content,
-.success-content {
+.success-modal .el-dialog__body {
+  padding: 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+/* Loading Content */
+.loading-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
 }
 
-.loading-text,
-.success-text {
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin-top: 10px;
-  color: #555;
+.loading-spinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 2rem;
 }
 
-/* Spinner customizado */
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-top-color: #007bff;
+.spinner-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid transparent;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s infinite linear;
+  animation: spin 1.5s linear infinite;
+}
+
+.spinner-ring:nth-child(1) {
+  border-top-color: #28a745;
+  animation-delay: 0s;
+}
+
+.spinner-ring:nth-child(2) {
+  border-right-color: #20c997;
+  animation-delay: 0.3s;
+}
+
+.spinner-ring:nth-child(3) {
+  border-bottom-color: #17a2b8;
+  animation-delay: 0.6s;
 }
 
 @keyframes spin {
@@ -815,70 +942,237 @@ input[type=number] {
   100% { transform: rotate(360deg); }
 }
 
-/* Novo estilo de animação para checkmark */
+.loading-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 0.5rem;
+}
+
+.loading-subtitle {
+  font-size: 1rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Success Content */
 .success-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
 }
 
-.checkmark {
-  width: 64px;
-  height: 64px;
+.success-animation {
+  margin-bottom: 2rem;
+}
+
+.success-checkmark {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  animation: checkmark-appear 0.6s ease-in-out;
+}
+
+.checkmark-svg {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  display: inline-block;
-  position: relative;
-  background-color: transparent;
-  border: 4px solid #28a745;
+  display: block;
+  stroke-width: 3;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+  background: linear-gradient(135deg, #28a745, #20c997);
+  padding: 10px;
   box-sizing: border-box;
-  animation: checkmarkCircle 0.6s ease forwards;
 }
 
-@keyframes checkmarkCircle {
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: rgba(255, 255, 255, 0.3);
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  stroke-width: 3;
+  stroke: #fff;
+  stroke-linecap: round;
+  animation: stroke-check 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes checkmark-appear {
   0% {
     transform: scale(0);
     opacity: 0;
   }
   50% {
+    transform: scale(1.2);
     opacity: 1;
-    transform: scale(1.1);
   }
   100% {
     transform: scale(1);
+    opacity: 1;
   }
 }
 
-.checkmark::before {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 24px;
-  border-right: 4px solid #28a745;
-  border-bottom: 4px solid #28a745;
-  top: 14px;
-  left: 18px;
-  transform: rotate(45deg);
-  transform-origin: bottom left;
-  animation: checkmarkStroke 0.5s ease forwards 0.6s;
-}
-
-@keyframes checkmarkStroke {
-  0% {
-    width: 0;
-    height: 0;
-  }
+@keyframes stroke {
   100% {
-    width: 8px;
-    height: 24px;
+    stroke-dashoffset: 0;
   }
 }
 
-.success-text {
-  font-size: 1.2rem;
-  font-weight: 500;
-  margin-top: 15px;
+@keyframes stroke-check {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Success Message */
+.success-message {
+  width: 100%;
+}
+
+.success-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.success-subtitle {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+/* Order Details */
+.order-details {
+  background: rgba(40, 167, 69, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(40, 167, 69, 0.1);
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #495057;
+}
+
+.detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-item i {
+  width: 20px;
   color: #28a745;
+  font-size: 1.1rem;
+}
+
+.detail-item span {
+  font-weight: 500;
+}
+
+/* Success Actions */
+.success-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary-custom {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-track-order {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.btn-track-order:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+  color: white;
+  text-decoration: none;
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+}
+
+/* Responsividade */
+@media (max-width: 576px) {
+  .success-content {
+    padding: 2rem 1rem;
+  }
+  
+  .success-title {
+    font-size: 1.75rem;
+  }
+  
+  .success-checkmark {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .checkmark-svg {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .order-details {
+    padding: 1rem;
+  }
+  
+  .detail-item {
+    font-size: 0.9rem;
+  }
 }
 
 </style>

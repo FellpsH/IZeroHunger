@@ -12,7 +12,7 @@ export function requireAuth(to, from, next) {
 export function requireFornecedor(to, from, next) {
   if (authService.isAuthenticated()) {
     const user = authService.getUser();
-    if (user && user.tipo === 'FORNECEDOR') {
+    if (user && user.tipo?.toUpperCase() === 'FORNECEDOR') {
       next();
     } else {
       next({ name: 'ProductsList' }); // Redirecionar para lista de produtos
@@ -25,7 +25,8 @@ export function requireFornecedor(to, from, next) {
 export function requireComprador(to, from, next) {
   if (authService.isAuthenticated()) {
     const user = authService.getUser();
-    if (user && (user.tipo === 'COMPRADOR' || user.tipo === 'FORNECEDOR')) {
+    const userType = user?.tipo?.toUpperCase();
+    if (user && (userType === 'COMPRADOR' || userType === 'FORNECEDOR')) {
       next();
     } else {
       next({ name: 'ProductsList' }); // Redirecionar para lista de produtos

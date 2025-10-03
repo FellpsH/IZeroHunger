@@ -28,7 +28,8 @@ export default {
     // Verificar se usuário tem permissão
     hasPermission(requiredType) {
       if (!this.user) return false;
-      return this.user.tipo === requiredType;
+      // Comparar em maiúscula para evitar problemas de case
+      return this.user.tipo?.toUpperCase() === requiredType.toUpperCase();
     },
 
     // Verificar se é fornecedor

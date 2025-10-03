@@ -8,7 +8,7 @@
           alt="Logo"
           class="brand-logo"
         />
-        <span class="brand-title">Alimentação Social</span>
+        <span class="brand-title">IZero Hunger</span>
       </router-link>
       
       <!-- Toggler button (para dispositivos móveis) -->
@@ -27,13 +27,6 @@
       <!-- Menu colapsado -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto align-items-center gap-2">
-          <!-- Botão para adicionar produto (apenas fornecedores) -->
-          <li v-if="showAddProduct" class="nav-item">
-            <router-link :to="{ name: 'ProductRegistration' }" @click.native.prevent="$router.push({ name: 'ProductRegistration' })" class="btn btn-outline-light btn-pill">
-              <i class="fas fa-plus"></i> Adicionar
-            </router-link>
-          </li>
-
           <!-- Carrinho com badge -->
           <li v-if="showCart" class="nav-item">
             <router-link :to="{ name: 'ProductsCart' }" @click.native.prevent="$router.push({ name: 'ProductsCart' })" class="btn btn-cart btn-pill position-relative">
@@ -60,6 +53,19 @@
               <li class="px-3 py-2 text-muted small">
                 Autenticado como<br />
                 <strong>{{ user.email }}</strong>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <!-- Botão para acompanhar pedido -->
+              <li>
+                <router-link :to="{ name: 'OrderTracking' }" class="dropdown-item text-primary" @click.native="closeDropdown">
+                  <i class="fas fa-truck me-1"></i> Acompanhar Pedido
+                </router-link>
+              </li>
+              <!-- Botão para adicionar produto (apenas fornecedores) -->
+              <li v-if="showAddProduct">
+                <router-link :to="{ name: 'ProductRegistration' }" class="dropdown-item text-success" @click.native="closeDropdown">
+                  <i class="fas fa-plus me-1"></i> Adicionar Produto
+                </router-link>
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
@@ -150,8 +156,14 @@ export default {
     // Inicializar contador
     this.updateCartCount();
     
+    // Verificar autenticação
+    this.checkAuth();
+    
     // Escutar eventos de atualização do carrinho
     this.$root.$on('cart-updated', this.updateCartCount);
+    
+    // Escutar eventos de atualização de autenticação
+    this.$root.$on('auth-updated', this.checkAuth);
     
     // Adicionar listener para cliques fora do dropdown
     document.addEventListener('click', this.handleClickOutside);
@@ -159,6 +171,7 @@ export default {
   beforeDestroy() {
     // Limpar listeners
     this.$root.$off('cart-updated', this.updateCartCount);
+    this.$root.$off('auth-updated', this.checkAuth);
     document.removeEventListener('click', this.handleClickOutside);
   }
 };
@@ -167,8 +180,8 @@ export default {
 <style>
 /* Ajustes gerais de estilo */
 .navbar-elevated {
-  background: linear-gradient(90deg, #0d6efd 0%, #0b5ed7 50%, #0a58ca 100%);
-  box-shadow: 0 4px 16px rgba(13, 110, 253, 0.25);
+  background: linear-gradient(90deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+  box-shadow: 0 4px 16px rgba(40, 167, 69, 0.25);
 }
 
 .brand-logo {
@@ -296,6 +309,16 @@ export default {
 .dropdown-item:hover {
   background: rgba(220, 53, 69, 0.1);
   color: #dc3545;
+}
+
+.dropdown-item.text-success:hover {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+.dropdown-item.text-primary:hover {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bff;
 }
 
 @keyframes dropdownFadeIn {

@@ -1,6 +1,6 @@
-# Alimentação Social
+# IZero Hunger
 
-Este repositório abriga o projeto "Alimentação Social", criado para otimizar a distribuição de alimentos, beneficiando comunidades e instituições sociais. O projeto é composto por duas partes principais: frontend e backend, empregando tecnologias modernas para oferecer uma experiência de usuário intuitiva e uma arquitetura de software robusta.
+Este repositório abriga o projeto "IZero Hunger", criado para otimizar a distribuição de alimentos, beneficiando comunidades e instituições sociais. O projeto é composto por duas partes principais: frontend e backend, empregando tecnologias modernas para oferecer uma experiência de usuário intuitiva e uma arquitetura de software robusta.
 
 ## Sumário
 

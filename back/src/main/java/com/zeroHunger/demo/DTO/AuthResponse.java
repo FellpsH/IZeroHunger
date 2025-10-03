@@ -7,16 +7,18 @@ public class AuthResponse {
     private String email;
     private String nome;
     private String tipo;
+    private String endereco;
     private Long id;
 
     // Constructors
     public AuthResponse() {}
 
-    public AuthResponse(String token, String email, String nome, String tipo, Long id) {
+    public AuthResponse(String token, String email, String nome, String tipo, String endereco, Long id) {
         this.token = token;
         this.email = email;
         this.nome = nome;
         this.tipo = tipo;
+        this.endereco = endereco;
         this.id = id;
     }
 
@@ -67,5 +69,13 @@ public class AuthResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
     }
 }

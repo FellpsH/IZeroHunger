@@ -1,9 +1,9 @@
 // Serviço de autenticação JWT
 class AuthService {
   constructor() {
-    this.apiUrl = process.env.VUE_APP_API_URL || 'http://localhost:8080/api';
+    this.apiUrl = process.env.VUE_APP_API_MODE || 'http://localhost:8080/api';
     this.tokenKey = 'jwt_token';
-    this.userKey = 'user_data';
+    this.userKey = 'user';
   }
 
   // Fazer login e obter token
@@ -66,10 +66,11 @@ class AuthService {
         
         // Salvar dados do usuário
         const userData = {
-          id: authData.userId,
+          id: authData.id,
           email: authData.email,
           nome: authData.nome,
-          tipo: authData.tipo
+          tipo: authData.tipo,
+          endereco: authData.endereco
         };
         localStorage.setItem(this.userKey, JSON.stringify(userData));
         

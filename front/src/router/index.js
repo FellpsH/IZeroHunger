@@ -6,6 +6,7 @@ import ProductsList from '../components/ProductsList.vue';
 import ProductRegistration from '../components/ProductRegistration.vue';
 import ProductsCart from '../components/ProductsCart.vue';
 import UserRegistration from '../components/UserRegistration.vue';
+import OrderTracking from '../components/OrderTracking.vue';
 import { requireFornecedor, guestOnly } from './authGuard';
 
 Vue.use(Router);
@@ -40,6 +41,12 @@ const routes = [
     name: 'ProductsCart',
     component: ProductsCart,
     // Rota liberada para autenticados de qualquer tipo
+  },
+  {
+    path: '/order-tracking',
+    name: 'OrderTracking',
+    component: OrderTracking,
+    // Rota para rastreamento de pedidos
   },
   {
     path: '/',

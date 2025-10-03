@@ -161,6 +161,10 @@ export default {
         if (result.success) {
           console.log('Login bem-sucedido:', result.user);
           this.$emit('login-success', result.user);
+          
+          // Emitir evento para atualizar NavBar
+          this.$root.$emit('auth-updated');
+          
           this.$router.push({ name: 'ProductsList' });
         } else {
           this.error = result.error || 'Credenciais inválidas';
