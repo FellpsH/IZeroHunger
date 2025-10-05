@@ -1,10 +1,7 @@
 # 🌱 IZero Hunger
 
-[![Backend CI/CD](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml)
-[![Frontend CI/CD](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml)
-[![Full Stack CI/CD](https://github.com/your-username/IZero_Hunger/actions/workflows/full-stack-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/full-stack-ci.yml)
-[![codecov](https://codecov.io/gh/your-username/IZero_Hunger/branch/main/graph/badge.svg)](https://codecov.io/gh/your-username/IZero_Hunger)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=izero-hunger-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=izero-hunger-backend)
+[![Backend Build](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml)
+[![Frontend Build](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml)
 
 Uma plataforma completa para otimizar a distribuição de alimentos, conectando fornecedores e compradores para reduzir o desperdício alimentar e beneficiar comunidades e instituições sociais.
 
@@ -262,56 +259,28 @@ O projeto implementa uma suíte completa de testes com **JUnit 5** e **Mockito**
 
 ## 🚀 CI/CD e DevOps
 
-O projeto implementa um pipeline completo de CI/CD com **GitHub Actions**, demonstrando práticas modernas de DevOps:
+O projeto implementa pipelines simples e eficazes com **GitHub Actions**:
 
 ### 🔄 Pipelines Automatizados
 
-#### Backend CI/CD (`backend-ci.yml`)
+#### Backend Build & Test (`backend-ci.yml`)
 - ✅ **Build automatizado** com Gradle
 - 🧪 **Execução de testes** JUnit 5 + Mockito
-- 📊 **Relatórios de cobertura** com JaCoCo
-- 🔒 **Análise de segurança** OWASP Dependency Check
-- 📏 **Qualidade de código** SonarCloud
-- 🐳 **Build Docker** automatizado
-- 📦 **Artifacts** JAR files
+- 📊 **Relatórios de testes** automáticos
+- ☕ **Java 17** com Temurin
 
-#### Frontend CI/CD (`frontend-ci.yml`)
-- ✅ **Build multi-node** (Node 18.x, 20.x)
-- 🔍 **Linting** ESLint
-- 🏗️ **Build otimizado** para produção
-- 🔍 **Lighthouse audit** performance
-- 🛡️ **Security scan** npm audit + Snyk
-- 🐳 **Docker build** Nginx
-- 🌐 **Deploy preview** Netlify
+#### Frontend Build & Test (`frontend-ci.yml`)
+- ✅ **Build automatizado** com npm
+- 🟢 **Node.js 20** com cache
+- 📦 **Dependências** otimizadas
+- 🏗️ **Build de produção**
 
-#### Full Stack CI/CD (`full-stack-ci.yml`)
-- 🔗 **Testes de integração** E2E
-- 🔄 **Dependency updates** automatizados
-- ⚡ **Performance tests** Artillery
-- 🚀 **Releases automatizados**
+### 📊 Benefícios
 
-### 📊 Métricas e Qualidade
-
-```yaml
-# Cobertura de testes
-Backend: 95%+ com JaCoCo
-Frontend: ESLint + Security scans
-
-# Qualidade de código
-SonarCloud: Quality Gate
-OWASP: Security vulnerabilities
-Lighthouse: Performance audit
-```
-
-### 🔧 Ferramentas DevOps
-
-- **GitHub Actions**: CI/CD pipelines
-- **Docker**: Containerização
-- **SonarCloud**: Análise de código
-- **Codecov**: Cobertura de testes
-- **OWASP**: Análise de segurança
-- **Lighthouse**: Performance audit
-- **Snyk**: Vulnerabilidades npm
+- ✅ **Builds rápidos** e confiáveis
+- ✅ **Testes automatizados** em cada commit
+- ✅ **Feedback imediato** em Pull Requests
+- ✅ **Cache inteligente** para performance
 
 ## 🐳 Docker
 
