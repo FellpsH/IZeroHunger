@@ -280,7 +280,7 @@ O projeto implementa pipelines simples e eficazes com **GitHub Actions**:
 - ✅ **Builds rápidos** e confiáveis
 - ✅ **Testes automatizados** em cada commit
 - ✅ **Feedback imediato** em Pull Requests
-- ✅ **Cache inteligente** para performance
+- ✅ **Cache inteligente** para performance 
 
 ## 🐳 Docker
 
