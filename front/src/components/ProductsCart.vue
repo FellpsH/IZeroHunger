@@ -233,6 +233,7 @@ import Navbar from './NavBar.vue';
 import UserLogin from './UserLogin.vue';
 import UserRegistration from './UserRegistration.vue';
 import pedidoService from '../services/pedidoService';
+import { formatCurrency } from '../utils/currency';
 
 export default {
   name: 'ProductsCart',
@@ -292,7 +293,7 @@ export default {
   },
   methods: {
     formatPrice(value) {
-      return (Number(value) || 0).toFixed(2);
+      return formatCurrency(value);
     },
     updateTotal() {
       this.calculateTotal(); 

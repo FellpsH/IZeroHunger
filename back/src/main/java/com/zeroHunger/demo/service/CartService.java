@@ -54,6 +54,7 @@ public class CartService {
         Usuario user = usuarioRepository.buscarUsuarioPorId(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
+
         // Cria um novo carrinho
         Cart cart = new Cart();
         cart.setUser(user);

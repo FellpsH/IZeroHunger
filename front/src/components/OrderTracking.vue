@@ -177,6 +177,7 @@
 <script>
 import Navbar from './NavBar.vue';
 import pedidoService from '../services/pedidoService';
+import { formatCurrency } from '../utils/currency';
 
 export default {
   name: 'OrderTracking',
@@ -248,17 +249,21 @@ export default {
         try {
           const localOrderData = JSON.parse(orderString);
           
+          // Log para debug
+          console.log('Dados locais do pedido:', localOrderData);
+          console.log('Total local:', localOrderData.total);
+          
           // Se temos um orderId, buscar dados atualizados do backend
           if (localOrderData.orderId) {
             const result = await pedidoService.buscarPedido(localOrderData.orderId);
             
             if (result.success) {
-              // Usar dados do backend
+              // Usar dados do backend, mas manter total local se backend retornar 0
               this.orderData = {
                 orderId: result.pedido.pedidoId,
                 items: result.pedido.itens || localOrderData.items,
-                total: result.pedido.total,
-                address: result.pedido.enderecoEntrega,
+                total: result.pedido.total || localOrderData.total, // Usar total local se backend retornar 0
+                address: result.pedido.enderecoEntrega || localOrderData.address,
                 orderDate: result.pedido.dataPedido,
                 status: result.pedido.status,
                 statusDescricao: result.pedido.statusDescricao
@@ -275,6 +280,10 @@ export default {
             // Usar dados locais se não tiver orderId
             this.orderData = localOrderData;
           }
+          
+          // Log final para debug
+          console.log('OrderData final:', this.orderData);
+          console.log('Total final:', this.orderData.total);
           
           this.updateTrackingTimes();
         } catch (error) {
@@ -387,7 +396,7 @@ export default {
     },
     
     formatPrice(value) {
-      return (Number(value) || 0).toFixed(2);
+      return formatCurrency(value);
     },
     
     formatDate(dateString) {

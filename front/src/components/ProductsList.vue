@@ -125,7 +125,7 @@
                   <div class="detail-item">
                     <i class="fas fa-tag text-primary"></i>
                     <span class="detail-label">Preço:</span>
-                    <span class="detail-value price">R$ {{ parseFloat(product.price).toFixed(2) }}</span>
+                    <span class="detail-value price">R$ {{ formatPrice(product.price) }}</span>
                   </div>
                   
                   <div class="detail-item">
@@ -182,6 +182,7 @@
 <script>
 import Navbar from './NavBar.vue';
 import SplashScreen from './SplashScreen.vue';
+import { formatCurrency } from '../utils/currency';
 
 export default {
   name: 'ProductsList',
@@ -218,6 +219,10 @@ export default {
   },
   
   methods: {
+    formatPrice(value) {
+      return formatCurrency(value);
+    },
+    
     normalizeString(str) {
       return str
         .normalize('NFD') // Normaliza para decompor caracteres acentuados

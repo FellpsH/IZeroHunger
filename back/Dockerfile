@@ -1,3 +1,4 @@
+# Dockerfile ainda não funcionando. Irei ajustar na próxima atualização.
 # Multi-stage build for Spring Boot application
 FROM gradle:8.5-jdk17 AS builder
 

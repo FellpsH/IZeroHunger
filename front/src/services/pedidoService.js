@@ -12,7 +12,7 @@ class PedidoService {
       // Preparar dados da compra
       const compraData = {
         userId: usuarioId,
-        totalPrice: totalPrice,
+        totalPrice: Number(totalPrice), // Garantir que é número
         items: cartItems.map(item => ({
           productId: item.id,
           quantity: item.selectedQuantity || 1
@@ -35,29 +35,11 @@ class PedidoService {
     }
   }
 
-  // Buscar pedido por ID (simulado)
-  async buscarPedido(pedidoId) {
-    try {
-      // Como não temos o endpoint de pedidos, vamos simular
-      return { 
-        success: true, 
-        pedido: {
-          pedidoId: pedidoId,
-          status: 'CONFIRMADO',
-          statusDescricao: 'Pedido Confirmado',
-          total: 0,
-          enderecoEntrega: 'Endereço não informado',
-          dataPedido: new Date().toISOString(),
-          itens: []
-        }
-      };
-    } catch (error) {
-      console.error('Erro ao buscar pedido:', error);
-      return { 
-        success: false, 
-        error: error.message || 'Erro de conexão ao buscar pedido' 
-      };
-    }
+  async buscarPedido() {
+    return { 
+      success: false, 
+      error: 'Endpoint não implementado - usando dados locais'
+    };
   }
 
   // Formatar data para exibição
