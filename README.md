@@ -499,10 +499,6 @@ refactor: refatora código sem alterar funcionalidade
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 👥 Equipe
-
-Desenvolvido por estudantes da PUC Minas como projeto de Trabalho Interdisciplinar de Aplicações para Sistemas Distribuídos.
-
 ---
 
-**🌱 IZero Hunger** - *Conectando pessoas, reduzindo desperdício, alimentando esperança.*
+**🌱 IZero Hunger**
