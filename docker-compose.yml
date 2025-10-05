@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # Database
+  mysql:
+    image: mysql:8.0
+    container_name: izero-hunger-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: zero_hunger
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./back/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./back/src/main/resources/data.sql:/docker-entrypoint-initdb.d/2-data.sql
+    networks:
+      - izero-hunger-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Backend
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: izero-hunger-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/zero_hunger
+      SPRING_DATASOURCE_USERNAME: app_user
+      SPRING_DATASOURCE_PASSWORD: app_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - izero-hunger-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Frontend
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: izero-hunger-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - izero-hunger-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis (for caching - optional)
+  redis:
+    image: redis:7-alpine
+    container_name: izero-hunger-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - izero-hunger-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  izero-hunger-network:
+    driver: bridge

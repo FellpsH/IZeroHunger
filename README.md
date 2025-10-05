@@ -1,5 +1,11 @@
 # 🌱 IZero Hunger
 
+[![Backend CI/CD](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml)
+[![Frontend CI/CD](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml)
+[![Full Stack CI/CD](https://github.com/your-username/IZero_Hunger/actions/workflows/full-stack-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/full-stack-ci.yml)
+[![codecov](https://codecov.io/gh/your-username/IZero_Hunger/branch/main/graph/badge.svg)](https://codecov.io/gh/your-username/IZero_Hunger)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=izero-hunger-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=izero-hunger-backend)
+
 Uma plataforma completa para otimizar a distribuição de alimentos, conectando fornecedores e compradores para reduzir o desperdício alimentar e beneficiar comunidades e instituições sociais.
 
 ## 📋 Sumário
@@ -11,6 +17,8 @@ Uma plataforma completa para otimizar a distribuição de alimentos, conectando 
 - [Backend](#-backend)
 - [Banco de Dados](#-banco-de-dados)
 - [Testes](#-testes)
+- [CI/CD e DevOps](#-cicd-e-devops)
+- [Docker](#-docker)
 - [Instalação e Configuração](#-instalação-e-configuração)
 - [API Endpoints](#-api-endpoints)
 - [Funcionalidades](#-funcionalidades)
@@ -251,6 +259,90 @@ O projeto implementa uma suíte completa de testes com **JUnit 5** e **Mockito**
 - **Repositories**: Testes com banco H2
 
 📖 **Guia Completo**: Veja `back/JUNIT_GUIDE.md` para documentação detalhada dos testes.
+
+## 🚀 CI/CD e DevOps
+
+O projeto implementa um pipeline completo de CI/CD com **GitHub Actions**, demonstrando práticas modernas de DevOps:
+
+### 🔄 Pipelines Automatizados
+
+#### Backend CI/CD (`backend-ci.yml`)
+- ✅ **Build automatizado** com Gradle
+- 🧪 **Execução de testes** JUnit 5 + Mockito
+- 📊 **Relatórios de cobertura** com JaCoCo
+- 🔒 **Análise de segurança** OWASP Dependency Check
+- 📏 **Qualidade de código** SonarCloud
+- 🐳 **Build Docker** automatizado
+- 📦 **Artifacts** JAR files
+
+#### Frontend CI/CD (`frontend-ci.yml`)
+- ✅ **Build multi-node** (Node 18.x, 20.x)
+- 🔍 **Linting** ESLint
+- 🏗️ **Build otimizado** para produção
+- 🔍 **Lighthouse audit** performance
+- 🛡️ **Security scan** npm audit + Snyk
+- 🐳 **Docker build** Nginx
+- 🌐 **Deploy preview** Netlify
+
+#### Full Stack CI/CD (`full-stack-ci.yml`)
+- 🔗 **Testes de integração** E2E
+- 🔄 **Dependency updates** automatizados
+- ⚡ **Performance tests** Artillery
+- 🚀 **Releases automatizados**
+
+### 📊 Métricas e Qualidade
+
+```yaml
+# Cobertura de testes
+Backend: 95%+ com JaCoCo
+Frontend: ESLint + Security scans
+
+# Qualidade de código
+SonarCloud: Quality Gate
+OWASP: Security vulnerabilities
+Lighthouse: Performance audit
+```
+
+### 🔧 Ferramentas DevOps
+
+- **GitHub Actions**: CI/CD pipelines
+- **Docker**: Containerização
+- **SonarCloud**: Análise de código
+- **Codecov**: Cobertura de testes
+- **OWASP**: Análise de segurança
+- **Lighthouse**: Performance audit
+- **Snyk**: Vulnerabilidades npm
+
+## 🐳 Docker
+
+### Desenvolvimento Local
+```bash
+# Subir toda a stack
+docker-compose up -d
+
+# Apenas backend + banco
+docker-compose up -d mysql backend
+
+# Logs em tempo real
+docker-compose logs -f
+```
+
+### Produção
+```bash
+# Backend
+docker build -t izero-hunger-backend ./back
+docker run -p 8080:8080 izero-hunger-backend
+
+# Frontend
+docker build -t izero-hunger-frontend ./front
+docker run -p 80:80 izero-hunger-frontend
+```
+
+### 🏗️ Multi-stage Builds
+- **Backend**: Gradle build + OpenJDK runtime
+- **Frontend**: Node build + Nginx serve
+- **Otimização**: Imagens mínimas e seguras
+- **Health checks**: Monitoramento automático
 
 ## 🚀 Instalação e Configuração
 

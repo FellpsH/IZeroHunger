@@ -2,6 +2,9 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'jacoco'
+	id 'org.owasp.dependencycheck' version '8.4.0'
+	id 'org.sonarqube' version '4.4.1.3373'
 }
 
 group = 'com.zeroHunger'
@@ -35,4 +38,36 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
+}
+
+// JaCoCo for code coverage
+jacoco {
+	toolVersion = "0.8.8"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
+// OWASP Dependency Check
+dependencyCheck {
+	format = 'HTML'
+	suppressionFile = 'owasp-suppressions.xml'
+}
+
+// SonarQube
+sonarqube {
+	properties {
+		property "sonar.projectKey", "izero-hunger-backend"
+		property "sonar.organization", "your-org"
+		property "sonar.host.url", "https://sonarcloud.io"
+	}
 }
