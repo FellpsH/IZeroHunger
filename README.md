@@ -1,8 +1,4 @@
 # 🌱 IZero Hunger
-
-[![Backend Build](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/backend-ci.yml)
-[![Frontend Build](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/your-username/IZero_Hunger/actions/workflows/frontend-ci.yml)
-
 Uma plataforma completa para otimizar a distribuição de alimentos, conectando fornecedores e compradores para reduzir o desperdício alimentar e beneficiar comunidades e instituições sociais.
 
 ## 📋 Sumário
